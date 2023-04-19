@@ -1,19 +1,23 @@
 package com.parcial1.products.controllers;
 
+import com.parcial1.products.models.Product;
 import com.parcial1.products.services.ProductServiceImp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
-import javax.websocket.server.PathParam;
-import java.util.HashMap;
-import java.util.Map;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import java.util.*;
 
 @RestController
 public class ProductController {
     @Autowired
     private ProductServiceImp productServiceImp;
+    @Autowired
+    private EntityManagerFactory entityManagerFactory;
 
     @GetMapping(value = "/product/{id}")
     public ResponseEntity getById(@PathVariable(name = "id") Long id) {
@@ -50,13 +54,32 @@ public class ProductController {
     }
 
     @PostMapping(value = "/createProduct")
-    public ResponseEntity createProduct (@RequestBody Object idProduct) {
+    public ResponseEntity createProduct () {
         Map response = new HashMap();
 
-        System.out.print(idProduct);
+        try {
+            RestTemplate restTemplate = new RestTemplate();
+            Product[] incomingList = restTemplate.getForObject("https://fakestoreapi.com/products", Product[].class);
+            List<Product> productsToInsert = new ArrayList<>(Arrays.asList(incomingList));
 
-        response.put("data", idProduct);
+            EntityManager entityManager = entityManagerFactory.createEntityManager();
+            entityManager.getTransaction().begin();
 
-        return new ResponseEntity(response, HttpStatus.OK);
+            for (Product product : productsToInsert) {
+                entityManager.merge(product);
+            }
+
+            entityManager.getTransaction().commit();
+
+            response.put("message", "Products installed successfully.");
+            response.put("data", incomingList);
+
+            return new ResponseEntity(response, HttpStatus.OK);
+        } catch (Exception e) {
+            response.put("message", "An error occurred in the insertion of the products, please try again.");
+            response.put("data", e.getMessage());
+
+            return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
+        }
     }
 }
