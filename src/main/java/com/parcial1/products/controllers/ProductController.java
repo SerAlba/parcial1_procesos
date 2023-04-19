@@ -82,4 +82,18 @@ public class ProductController {
             return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
         }
     }
+
+    @PutMapping("/product/{id}")
+    public ResponseEntity updateProduct(@PathVariable Long id, @RequestBody Product product) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            Product updatedProduct = productServiceImp.updateProduct(id, product);
+            response.put("message", "Product updated successfully");
+            response.put("data", updatedProduct);
+            return new ResponseEntity(response, HttpStatus.OK);
+        } catch (RuntimeException e) {
+            response.put("message", e.getMessage());
+            return new ResponseEntity(response, HttpStatus.NOT_FOUND);
+        }
+    }
 }
