@@ -1,5 +1,6 @@
 package com.parcial1.products.services;
 
+import com.parcial1.products.models.Product;
 import com.parcial1.products.models.User;
 import com.parcial1.products.repository.UserRepository;
 import com.parcial1.products.utils.JWTUtil;
@@ -32,12 +33,38 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
-    public User updateUser(User user) {
-        return null;
+    public User updateUser(Long id, User user) {
+        User userBD = userRepository.findById(id).get();
+
+        if (user.getFirstName() != null) {
+            userBD.setFirstName(user.getFirstName());
+        }
+        if (user.getLastName() != null) {
+            userBD.setLastName(user.getLastName());
+        }
+        if (user.getEmail() != null) {
+            userBD.setEmail(user.getEmail());
+        }
+        if (user.getPassword() != null) {
+            userBD.setPassword(user.getPassword());
+        }
+        if (user.getAddress() != null) {
+            userBD.setAddress(user.getAddress());
+        }
+        if (user.getBirthday() != null) {
+            userBD.setBirthday(user.getBirthday());
+        }
+
+        return userRepository.save(userBD);
     }
 
     @Override
     public List<User> getAllUser() {
-        return null;
+        return userRepository.findAll();
+    }
+
+    @Override
+    public User getUserById(Long id) {
+        return userRepository.findById(id).get();
     }
 }
