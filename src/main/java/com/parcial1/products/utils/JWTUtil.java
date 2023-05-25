@@ -38,6 +38,7 @@ public class JWTUtil {
      * @param subject
      * @return
      */
+
     public String create(String id, String subject) {
 
         // The JWT signature algorithm used to sign the token
@@ -92,5 +93,15 @@ public class JWTUtil {
                 .parseClaimsJws(jwt).getBody();
 
         return claims.getId();
+    }
+
+    public boolean validateToken(String token) {
+        try {
+            // Parse and validate the token
+            Jwts.parser().setSigningKey(DatatypeConverter.parseBase64Binary(key)).parseClaimsJws(token);
+            return true; // Token is valid
+        } catch (Exception e) {
+            return false; // Token is invalid
+        }
     }
 }

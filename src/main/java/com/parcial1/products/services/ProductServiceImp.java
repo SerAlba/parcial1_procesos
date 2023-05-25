@@ -2,6 +2,7 @@ package com.parcial1.products.services;
 
 import com.parcial1.products.models.Product;
 import com.parcial1.products.repository.ProductRepository;
+import com.parcial1.products.utils.JWTUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -16,6 +17,9 @@ import java.util.List;
 public class ProductServiceImp implements ProductService {
     @Autowired
     private ProductRepository productRepository;
+
+    @Autowired
+    private JWTUtil jwtUtil;
     @Autowired
     private EntityManagerFactory entityManagerFactory;
 
