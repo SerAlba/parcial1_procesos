@@ -6,9 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 
-import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import java.util.*;
 
@@ -58,21 +56,10 @@ public class ProductController {
         Map response = new HashMap();
 
         try {
-            RestTemplate restTemplate = new RestTemplate();
-            Product[] incomingList = restTemplate.getForObject("https://fakestoreapi.com/products", Product[].class);
-            List<Product> productsToInsert = new ArrayList<>(Arrays.asList(incomingList));
-
-            EntityManager entityManager = entityManagerFactory.createEntityManager();
-            entityManager.getTransaction().begin();
-
-            for (Product product : productsToInsert) {
-                entityManager.merge(product);
-            }
-
-            entityManager.getTransaction().commit();
+            List<Product> newProducts = productServiceImp.createProduct();
 
             response.put("message", "Products installed successfully.");
-            response.put("data", incomingList);
+            response.put("data", newProducts);
 
             return new ResponseEntity(response, HttpStatus.OK);
         } catch (Exception e) {
@@ -90,9 +77,11 @@ public class ProductController {
             Product updatedProduct = productServiceImp.updateProduct(id, product);
             response.put("message", "Product updated successfully");
             response.put("data", updatedProduct);
+
             return new ResponseEntity(response, HttpStatus.OK);
         } catch (RuntimeException e) {
             response.put("message", e.getMessage());
+
             return new ResponseEntity(response, HttpStatus.NOT_FOUND);
         }
     }
