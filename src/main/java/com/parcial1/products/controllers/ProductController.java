@@ -2,6 +2,7 @@ package com.parcial1.products.controllers;
 
 import com.parcial1.products.models.Product;
 import com.parcial1.products.services.ProductService;
+import com.parcial1.products.utils.JWTUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,10 +16,26 @@ public class ProductController {
     @Autowired
     private ProductService productService;
     @Autowired
+    private JWTUtil jwtUtil;
+    @Autowired
     private EntityManagerFactory entityManagerFactory;
 
     @GetMapping(value = "/product/{id}")
-    public ResponseEntity getById(@PathVariable(name = "id") Long id) {
+    public ResponseEntity getById(@PathVariable(name = "id") Long id, @RequestHeader(value = "Authorization", required = false) String token) {
+        if (token == null || token.isEmpty()) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "Authentication token is required");
+            response.put("data", Collections.emptyMap());
+            return new ResponseEntity(response, HttpStatus.UNAUTHORIZED);
+        }
+
+        if (!validateToken(token)) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "Invalid token");
+            response.put("data", Collections.emptyMap());
+            return new ResponseEntity(response, HttpStatus.UNAUTHORIZED);
+        }
+
         Map response = new HashMap();
 
         try {
@@ -35,7 +52,21 @@ public class ProductController {
     }
 
     @GetMapping(value = "/listProducts")
-    public ResponseEntity getListProducts () {
+    public ResponseEntity getListProducts (@RequestHeader(value = "Authorization", required = false) String token) {
+        if (token == null || token.isEmpty()) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "Authentication token is required");
+            response.put("data", Collections.emptyMap());
+            return new ResponseEntity(response, HttpStatus.UNAUTHORIZED);
+        }
+
+        if (!validateToken(token)) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "Invalid token");
+            response.put("data", Collections.emptyMap());
+            return new ResponseEntity(response, HttpStatus.UNAUTHORIZED);
+        }
+
         Map response = new HashMap();
 
         try {
@@ -52,7 +83,21 @@ public class ProductController {
     }
 
     @PostMapping(value = "/createProduct")
-    public ResponseEntity createProduct () {
+    public ResponseEntity createProduct (@RequestHeader(value = "Authorization", required = false) String token) {
+        if (token == null || token.isEmpty()) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "Authentication token is required");
+            response.put("data", Collections.emptyMap());
+            return new ResponseEntity(response, HttpStatus.UNAUTHORIZED);
+        }
+
+        if (!validateToken(token)) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "Invalid token");
+            response.put("data", Collections.emptyMap());
+            return new ResponseEntity(response, HttpStatus.UNAUTHORIZED);
+        }
+
         Map response = new HashMap();
 
         try {
@@ -71,7 +116,21 @@ public class ProductController {
     }
 
     @PutMapping("/product/{id}")
-    public ResponseEntity updateProduct(@PathVariable Long id, @RequestBody Product product) {
+    public ResponseEntity updateProduct(@PathVariable Long id, @RequestBody Product product, @RequestHeader(value = "Authorization", required = false) String token) {
+        if (token == null || token.isEmpty()) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "Authentication token is required");
+            response.put("data", Collections.emptyMap());
+            return new ResponseEntity(response, HttpStatus.UNAUTHORIZED);
+        }
+
+        if (!validateToken(token)) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "Invalid token");
+            response.put("data", Collections.emptyMap());
+            return new ResponseEntity(response, HttpStatus.UNAUTHORIZED);
+        }
+
         Map<String, Object> response = new HashMap<>();
 
         try {
@@ -86,5 +145,10 @@ public class ProductController {
 
             return new ResponseEntity(response, HttpStatus.NOT_FOUND);
         }
+    }
+
+    private boolean validateToken(String token) {
+        // Use the JWTUtil to validate the token
+        return jwtUtil.validateToken(token);
     }
 }
