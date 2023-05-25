@@ -93,4 +93,14 @@ public class JWTUtil {
 
         return claims.getId();
     }
+
+    public boolean validateToken(String token) {
+        try {
+            // Parse and validate the token
+            Jwts.parser().setSigningKey(DatatypeConverter.parseBase64Binary(key)).parseClaimsJws(token);
+            return true; // Token is valid
+        } catch (Exception e) {
+            return false; // Token is invalid
+        }
+    }
 }
