@@ -31,4 +31,24 @@ public class AuthController {
             return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
         }
     }
+
+    @GetMapping(value = "/login")
+    public ResponseEntity login(@RequestBody User user) {
+        Map response = new HashMap();
+        Map data = new HashMap();
+
+        try {
+            data.put("token", userService.login(user));
+
+            response.put("message", "Successful authenticated user");
+            response.put("data", data);
+
+            return new ResponseEntity(response, HttpStatus.OK);
+        } catch (Exception e) {
+            response.put("message", "Sorry, an error occurred with authentication");
+            response.put("data", e.getMessage());
+
+            return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
+        }
+    }
 }
