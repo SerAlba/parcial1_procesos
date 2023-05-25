@@ -1,7 +1,7 @@
 package com.parcial1.products.controllers;
 
 import com.parcial1.products.models.Product;
-import com.parcial1.products.services.ProductServiceImp;
+import com.parcial1.products.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +13,7 @@ import java.util.*;
 @RestController
 public class ProductController {
     @Autowired
-    private ProductServiceImp productServiceImp;
+    private ProductService productService;
     @Autowired
     private EntityManagerFactory entityManagerFactory;
 
@@ -23,7 +23,7 @@ public class ProductController {
 
         try {
             response.put("message", "Product found");
-            response.put("data", productServiceImp.getProductById(id));
+            response.put("data", productService.getProductById(id));
 
             return new ResponseEntity(response, HttpStatus.OK);
         } catch (Exception e) {
@@ -40,7 +40,7 @@ public class ProductController {
 
         try {
             response.put("message", "Products found");
-            response.put("data", productServiceImp.allProducts());
+            response.put("data", productService.allProducts());
 
             return new ResponseEntity(response, HttpStatus.OK);
         } catch (Exception e) {
@@ -56,7 +56,7 @@ public class ProductController {
         Map response = new HashMap();
 
         try {
-            List<Product> newProducts = productServiceImp.createProduct();
+            List<Product> newProducts = productService.createProduct();
 
             response.put("message", "Products installed successfully.");
             response.put("data", newProducts);
@@ -74,7 +74,7 @@ public class ProductController {
     public ResponseEntity updateProduct(@PathVariable Long id, @RequestBody Product product) {
         Map<String, Object> response = new HashMap<>();
         try {
-            Product updatedProduct = productServiceImp.updateProduct(id, product);
+            Product updatedProduct = productService.updateProduct(id, product);
             response.put("message", "Product updated successfully");
             response.put("data", updatedProduct);
 
