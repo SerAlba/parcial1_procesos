@@ -73,6 +73,7 @@ public class ProductController {
     @PutMapping("/product/{id}")
     public ResponseEntity updateProduct(@PathVariable Long id, @RequestBody Product product) {
         Map<String, Object> response = new HashMap<>();
+
         try {
             Product updatedProduct = productService.updateProduct(id, product);
             response.put("message", "Product updated successfully");
@@ -80,7 +81,8 @@ public class ProductController {
 
             return new ResponseEntity(response, HttpStatus.OK);
         } catch (RuntimeException e) {
-            response.put("message", e.getMessage());
+            response.put("message", "An error occurred while updating the product");
+            response.put("data", e.getMessage());
 
             return new ResponseEntity(response, HttpStatus.NOT_FOUND);
         }
