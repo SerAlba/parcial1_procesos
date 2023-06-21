@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
+@CrossOrigin
 public class AuthController {
     @Autowired
     private UserService userService;
@@ -32,16 +33,13 @@ public class AuthController {
         }
     }
 
-    @GetMapping(value = "/login")
+    @PostMapping(value = "/login")
     public ResponseEntity login(@RequestBody User user) {
         Map response = new HashMap();
-        Map data = new HashMap();
 
         try {
-            data.put("token", userService.login(user));
-
             response.put("message", "Successful authenticated user");
-            response.put("data", data);
+            response.put("data", userService.login(user));
 
             return new ResponseEntity(response, HttpStatus.OK);
         } catch (Exception e) {

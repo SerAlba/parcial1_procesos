@@ -12,6 +12,7 @@ import javax.persistence.EntityManagerFactory;
 import java.util.*;
 
 @RestController
+@CrossOrigin
 public class ProductController {
     @Autowired
     private ProductService productService;
