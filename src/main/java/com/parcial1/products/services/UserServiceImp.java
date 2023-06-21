@@ -7,7 +7,9 @@ import com.parcial1.products.utils.JWTUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -22,14 +24,24 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
-    public String login(User user) {
+    public Optional login(User user) {
         Optional<User> userBD = userRepository.findByEmailAndPassword(user.getEmail(), user.getPassword());
+        Map result = new HashMap();
 
         if (userBD.isEmpty()) {
             throw new RuntimeException("Invalid authentication credentials");
         }
 
-        return jwtUtil.create(String.valueOf(userBD.get().getId()), String.valueOf(userBD.get().getEmail()));
+        String token = jwtUtil.create(String.valueOf(userBD.get().getId()), String.valueOf(userBD.get().getEmail()));
+        result.put("token", token);
+        result.put("id", userBD.get().getId());
+        result.put("firstName", userBD.get().getFirstName());
+        result.put("lastName", userBD.get().getLastName());
+        result.put("email", userBD.get().getEmail());
+        result.put("address", userBD.get().getAddress());
+        result.put("birthday", userBD.get().getBirthday());
+
+        return Optional.of(result);
     }
 
     @Override
